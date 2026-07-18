@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.Thirai" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- The launch window shown before Compose draws. Painted with the brand
+         ground so there is no white flash on cold start; Compose's ThiraiTheme
+         takes over the moment the activity renders. -->
+    <style name="Theme.Thirai" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/brand_background</item>
+        <item name="android:statusBarColor">@color/brand_background</item>
+        <item name="android:navigationBarColor">@color/brand_background</item>
+    </style>
 </resources>

@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.kotlin.compose)
+    id("com.squareup.wire") version "6.2.0"
 }
 
 // Release signing is read from a gitignored keystore.properties at the repo
@@ -29,6 +31,24 @@ fun git(vararg args: String): String? =
 val gitVersionName: String = (git("describe", "--tags", "--dirty", "--always") ?: "0.0.0").removePrefix("v")
 val gitVersionCode: Int = git("rev-list", "--count", "HEAD")?.toIntOrNull() ?: 1
 
+// The default show-source URL is not hardcoded in the app — it comes from the
+// gitignored .env (THIRAI_SHOWS_URL), injected into BuildConfig at build time. A
+// clone without .env builds with an empty default; the user sets the source
+// in-app (Show source / Scan QR).
+fun envValue(key: String): String {
+    val f = rootProject.file(".env")
+    if (f.exists()) {
+        f.readLines().forEach { line ->
+            val t = line.trim()
+            if (t.startsWith("#") || "=" !in t) return@forEach
+            val (k, rawV) = t.removePrefix("export ").split("=", limit = 2)
+            if (k.trim() == key) return rawV.trim().trim('"')
+        }
+    }
+    return System.getenv(key) ?: ""
+}
+val showsUrl: String = envValue("THIRAI_SHOWS_URL")
+
 android {
     namespace = "com.thirai"
     compileSdk = 35
@@ -39,6 +59,8 @@ android {
         targetSdk = 35
         versionCode = gitVersionCode
         versionName = gitVersionName
+
+        buildConfigField("String", "SHOWS_URL", "\"$showsUrl\"")
     }
 
     signingConfigs {
@@ -81,6 +103,7 @@ android {
 
     buildFeatures {
         buildConfig = true
+        compose = true
     }
 
     packaging {
@@ -96,15 +119,41 @@ android {
     }
 }
 
+// Generate Kotlin classes for the Android TV Remote v2 protocol (pairing +
+// control) from the .proto files in src/main/proto.
+wire {
+    kotlin {}
+}
+
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.activity.compose)
+
+    // Jetpack Compose — the phone app's premium setup/debug UI.
+    val composeBom = platform(libs.androidx.compose.bom)
+    implementation(composeBom)
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.material3)
+    debugImplementation(libs.androidx.compose.ui.tooling)
 
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.okhttp)
 
-    implementation("com.tananaev:adblib:1.3")
+    // Android TV Remote v2 transport: Wire for the protobuf messages, and
+    // BouncyCastle to mint the self-signed client certificate used for pairing.
+    implementation("com.squareup.wire:wire-runtime:6.2.0")
+    implementation("org.bouncycastle:bcpkix-jdk18on:1.78.1")
+
+    // Glide loads poster bitmaps for the home-screen widget's RemoteViews.
     implementation("com.github.bumptech.glide:glide:4.16.0")
+    // Coil loads poster thumbnails in the Compose setup screen.
+    implementation("io.coil-kt:coil-compose:2.7.0")
+    // ZXing generates and scans the setup QR (share the show-source URL).
+    implementation(libs.zxing.android.embedded)
     testImplementation(libs.junit)
 }

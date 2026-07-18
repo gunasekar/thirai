@@ -1,11 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Solid teal tile, matching the finalized Puraa logo. -->
+<!-- Warm near-black ground with a faint amber glow rising from the lower
+     centre, like light spilling from behind a screen. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
     <path
         android:pathData="M0,0h108v108h-108z"
-        android:fillColor="#047C6E" />
+        android:fillColor="#0E0B07" />
+    <path android:pathData="M0,0h108v108h-108z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="radial"
+                android:centerX="54"
+                android:centerY="66"
+                android:gradientRadius="52"
+                android:startColor="#332A1706"
+                android:endColor="#000E0B07" />
+        </aapt:attr>
+    </path>
 </vector>

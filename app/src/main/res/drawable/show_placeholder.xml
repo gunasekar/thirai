@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Poster placeholder shown while the image loads or when a show has none. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
-    <solid android:color="#333333" />
-    <corners android:radius="8dp" />
+    <solid android:color="#241E14" />
+    <corners android:radius="12dp" />
 </shape>

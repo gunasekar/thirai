@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Thirai mark: a single amber play triangle with softly rounded corners.
+     Transparent ground so it sits on any surface. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+    <path
+        android:pathData="M18,13 L18,35 L37,24 Z"
+        android:fillColor="#E8A33D"
+        android:strokeColor="#E8A33D"
+        android:strokeWidth="4"
+        android:strokeLineJoin="round"
+        android:strokeLineCap="round" />
+</vector>

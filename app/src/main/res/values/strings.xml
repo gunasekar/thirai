@@ -1,4 +1,5 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Thirai</string>
+    <string name="widget_hint">Tap to play</string>
+    <string name="widget_restart">↺  Play current from start</string>
 </resources>
