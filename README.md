@@ -1,16 +1,24 @@
-# Thirai (திரை)
+<p align="center">
+  <img src="docs/assets/thirai-wordmark.svg" width="240" alt="Thirai">
+</p>
 
-**One tap on a home-screen widget starts a show on the TV.** No menus, no remote,
-no smart-TV navigation. Built for someone who just wants to watch — and the person
-who sets it up for them.
+<p align="center">
+  One tap on a home-screen widget starts a show on the TV — no menus, no remote,
+  no smart-TV navigation. Built for someone who just wants to watch, and the
+  person who sets it up for them.
+</p>
+
+<p align="center">
+  <a href="https://gunasekar.github.io/thirai/"><b>Config&nbsp;builder&nbsp;↗</b></a>
+</p>
+
+---
 
 Thirai is an Android phone app whose real interface is a **home-screen widget** of
 show posters. Tap a poster and the show plays on your Android TV. It talks to the
 TV over the built-in **Android TV Remote** service (the same one your phone's
 Google TV remote uses) — so there is **no developer mode, no ADB, no extra
 hardware**.
-
-→ Website & config builder: **https://gunasekar.github.io/thirai/**
 
 ## How it works
 
@@ -82,8 +90,8 @@ picks it up on the next refresh.
 
 The phone speaks the **Android TV Remote protocol v2** directly — TLS + protobuf,
 a one-time PIN pairing, then a control channel. See
-[`docs/`](docs/) for intent and requirements; the protocol client lives in
-`app/src/main/kotlin/com/thirai/tv/`.
+[`docs/PRD.md`](docs/PRD.md) for intent, design, and requirements; the
+protocol client lives in `app/src/main/kotlin/com/thirai/tv/`.
 
 ## Modules at a glance
 

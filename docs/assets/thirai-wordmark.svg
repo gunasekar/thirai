@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="430" height="120" viewBox="0 0 430 120" fill="none" role="img" aria-label="Thirai">
+  <style>
+    .wm-text{ fill:#101615; font-family:'Bricolage Grotesque','Helvetica Neue',Arial,sans-serif; font-weight:800; }
+    @media (prefers-color-scheme:dark){ .wm-text{ fill:#F1F5F3; } }
+  </style>
+  <!-- Amber play mark -->
+  <path d="M30 32 L30 88 L92 60 Z" fill="#E8A33D" stroke="#E8A33D" stroke-width="10" stroke-linejoin="round" stroke-linecap="round"/>
+  <!-- Wordmark with the accent dot -->
+  <text class="wm-text" x="118" y="86" font-size="70" letter-spacing="-2">Thirai<tspan fill="#E8A33D">.</tspan></text>
+</svg>
