@@ -1,9 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  minResizeWidth/Height must be set and smaller than minWidth/Height: Launcher3
+  hides any widget whose *minimum* span exceeds the home grid. Without them the
+  min span equals the 250x320dp default, which is too tall for smaller grids
+  (e.g. Motorola's on the Moto E40) — the widget then vanishes from the picker
+  there while showing fine on larger grids. The widget still places at the
+  250x320dp default; minResize only lets it shrink to fit.
+-->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:minWidth="250dp"
     android:minHeight="320dp"
     android:targetCellWidth="4"
     android:targetCellHeight="4"
+    android:minResizeWidth="150dp"
+    android:minResizeHeight="110dp"
     android:updatePeriodMillis="86400000"
     android:initialLayout="@layout/widget_thirai"
     android:previewImage="@drawable/widget_preview"
