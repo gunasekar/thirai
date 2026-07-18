@@ -49,6 +49,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
@@ -277,6 +278,7 @@ fun ThiraiSetupScreen() {
                 error = showsError,
                 shows = shows,
                 sendingIndex = sendingIndex,
+                tvReady = link == Link.Connected,
                 onPlay = ::play,
             )
             Spacer(Modifier.height(12.dp))
@@ -562,6 +564,7 @@ private fun ShowsSection(
     error: Boolean,
     shows: List<Show>,
     sendingIndex: Int,
+    tvReady: Boolean,
     onPlay: (Show, Int) -> Unit,
 ) {
     when {
@@ -588,7 +591,10 @@ private fun ShowsSection(
                 ShowRow(
                     show = show,
                     sending = sendingIndex == index,
-                    enabled = sendingIndex == -1 && show.deep_link.isNotBlank(),
+                    // Only playable when the TV is reachable — otherwise the tap
+                    // would silently fail, so the row is dimmed and inert instead.
+                    enabled = tvReady && sendingIndex == -1 && show.deep_link.isNotBlank(),
+                    tvReady = tvReady,
                     onClick = { onPlay(show, index) },
                 )
             }
@@ -601,11 +607,13 @@ private fun ShowRow(
     show: Show,
     sending: Boolean,
     enabled: Boolean,
+    tvReady: Boolean,
     onClick: () -> Unit,
 ) {
     ThiraiCard(
         modifier = Modifier
             .fillMaxWidth()
+            .alpha(if (tvReady) 1f else 0.45f)
             .clickable(enabled = enabled, onClick = onClick),
         contentPadding = PaddingValues(12.dp),
     ) {
@@ -638,7 +646,11 @@ private fun ShowRow(
                     color = MaterialTheme.colorScheme.onSurface,
                 )
                 Text(
-                    if (sending) "Sending to TV…" else "Tap to play on TV",
+                    when {
+                        sending -> "Sending to TV…"
+                        !tvReady -> "Connect your TV to play"
+                        else -> "Tap to play on TV"
+                    },
                     style = MaterialTheme.typography.bodySmall,
                     color = if (sending) {
                         MaterialTheme.colorScheme.primary
@@ -648,19 +660,25 @@ private fun ShowRow(
                 )
             }
             Spacer(Modifier.size(12.dp))
-            PlayAffordance(sending = sending)
+            PlayAffordance(sending = sending, ready = tvReady)
         }
     }
 }
 
-/** Trailing amber play button, swapped for a spinner while a send is in flight. */
+/**
+ * Trailing play button. Amber when the TV is reachable, a muted grey when it
+ * isn't (the row is inert then), and a spinner while a send is in flight.
+ */
 @Composable
-private fun PlayAffordance(sending: Boolean) {
+private fun PlayAffordance(sending: Boolean, ready: Boolean) {
     Box(
         modifier = Modifier
             .size(40.dp)
             .clip(CircleShape)
-            .background(MaterialTheme.colorScheme.primaryContainer),
+            .background(
+                if (ready) MaterialTheme.colorScheme.primaryContainer
+                else MaterialTheme.colorScheme.surfaceVariant,
+            ),
         contentAlignment = Alignment.Center,
     ) {
         if (sending) {
@@ -673,7 +691,8 @@ private fun PlayAffordance(sending: Boolean) {
             Icon(
                 imageVector = Icons.Filled.PlayArrow,
                 contentDescription = "Play",
-                tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                tint = if (ready) MaterialTheme.colorScheme.onPrimaryContainer
+                else MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(24.dp),
             )
         }
