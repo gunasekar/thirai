@@ -4,4 +4,9 @@
     android:shape="rectangle">
     <solid android:color="#241E14" />
     <corners android:radius="12dp" />
+    <!-- Intrinsic size gives the poster tile its aspect ratio (~3:4) when shown
+         as the ImageView src via adjustViewBounds — both while a poster loads and
+         when a show has none — so the tile height scales with its width instead
+         of being fixed. Ignored when the shape is used as a background. -->
+    <size android:width="300dp" android:height="400dp" />
 </shape>

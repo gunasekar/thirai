@@ -53,7 +53,7 @@ class ThiraiWidgetProvider : AppWidgetProvider() {
                         Glide.with(context.applicationContext)
                             .asBitmap()
                             .load(show.image_url)
-                            .override(320, 440)
+                            .override(300, 400)
                             .transform(MultiTransformation(CenterCrop(), RoundedCorners(cornerPx)))
                             .submit()
                             .get()
