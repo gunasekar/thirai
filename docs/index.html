@@ -136,8 +136,8 @@
     <h1>Your shows, one tap<br/>from the home screen.</h1>
     <p>Thirai turns a home-screen widget into one-tap shortcuts to your shows on the TV — no menus, no remote, no smart-TV navigation. For anyone who wants their shows a tap away, and for anyone who’d rather not wrestle with apps.</p>
     <div class="cta">
-      <a class="btn solid" href="#builder">Build your show list</a>
-      <a class="btn" href="#how">How it works</a>
+      <a class="btn solid" href="#builder">Build your shows</a>
+      <a class="btn" href="https://github.com/gunasekar/thirai/releases/latest">Download the APK</a>
     </div>
   </div>
 
@@ -157,7 +157,7 @@
   <section id="builder">
     <div class="eyebrow">Config builder</div>
     <h2>Build your show list</h2>
-    <p class="lead">Add each show, then copy the JSON to your host and make a setup QR. Tamil titles are shown to the viewer; the English title is just a label.</p>
+    <p class="lead">Add each show, then copy the JSON to your host and make a setup QR. The native-language title is shown to the viewer; the English title is just a label.</p>
 
     <div class="field" style="max-width:420px">
       <label>Default streaming app package (optional)</label>
@@ -165,7 +165,7 @@
     </div>
 
     <div class="row-head">
-      <div>Title (English)</div><div>Title (Tamil)</div><div>Deep link</div><div>Poster URL</div><div>App package</div><div></div>
+      <div>Title (English)</div><div>Title (native)</div><div>Deep link</div><div>Poster URL</div><div>App package</div><div></div>
     </div>
     <div id="rows"></div>
 
@@ -206,7 +206,7 @@
   const rows = document.getElementById('rows');
   const FIELDS = [
     ['title','Siragadikka Aasai'],
-    ['title_ta','சிறகடிக்க ஆசை'],
+    ['title_native','சிறகடிக்க ஆசை'],
     ['deep_link','https://www.hotstar.com/in/shows/…'],
     ['image_url','https://…/poster.png'],
     ['app_package','(default)'],
@@ -231,7 +231,7 @@
     const shows = [...document.querySelectorAll('.show-row')].map((r,i)=>{
       const get=k=>r.querySelector(`[data-k="${k}"]`).value.trim();
       const o={ id:String(i+1), title:get('title') };
-      if(get('title_ta')) o.title_ta=get('title_ta');
+      if(get('title_native')) o.title_native=get('title_native');
       o.image_url=get('image_url');
       o.deep_link=get('deep_link');
       if(get('app_package')) o.app_package=get('app_package');
@@ -259,7 +259,7 @@
     try{ localStorage.setItem('thirai-theme', next); }catch(e){}
   });
   // Seed with one sample row + one empty
-  addRow({title:'Siragadikka Aasai', title_ta:'சிறகடிக்க ஆசை', deep_link:'https://www.hotstar.com/in/shows/siragadikka-aasai/1260129356'});
+  addRow({title:'Siragadikka Aasai', title_native:'சிறகடிக்க ஆசை', deep_link:'https://www.hotstar.com/in/shows/siragadikka-aasai/1260129356'});
   addRow();
 </script>
 </body>

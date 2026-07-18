@@ -109,6 +109,10 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            // BouncyCastle ships payloads we never touch: post-quantum (picnic)
+            // key data and localized cert-path message bundles. Drop them.
+            excludes += "org/bouncycastle/pqc/**"
+            excludes += "org/bouncycastle/**/*Messages*.properties"
         }
     }
 

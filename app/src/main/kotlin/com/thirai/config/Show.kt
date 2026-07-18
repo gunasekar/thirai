@@ -24,10 +24,10 @@ data class Show(
     val id: String = "",
     // Canonical (English) title — used as a stable identifier and fallback.
     val title: String = "",
-    // Display title in Tamil, managed in the gist. Shown in the app and widget
-    // when set; falls back to [title]. Keeps the UI chrome English while the
-    // show names read in Tamil for the viewer.
-    val title_ta: String = "",
+    // Display title in the viewer's own language, managed in the config. Shown in
+    // the app and widget when set; falls back to [title]. Keeps the app chrome in
+    // English while the show names read in the viewer's native language.
+    val title_native: String = "",
     val image_url: String = "",
     val deep_link: String = "",
     // The streaming app this show opens in (e.g. "in.startv.hotstar"). Optional
@@ -36,6 +36,6 @@ data class Show(
     // it into play. Leave empty to skip that wait (a blind timed launch).
     val app_package: String = ""
 ) {
-    /** The title to show the viewer — Tamil when provided, else the English name. */
-    val displayTitle: String get() = title_ta.ifBlank { title }
+    /** The title to show the viewer — the native-language name when provided, else the English one. */
+    val displayTitle: String get() = title_native.ifBlank { title }
 }
