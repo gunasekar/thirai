@@ -54,16 +54,9 @@ object ThiraiConfigFetcher {
                 Log.w(TAG, "No config available (network or cache)")
                 return@withContext emptyList()
             }
-        resolveShows(config)
-    }
-
-    /** Apply app-level defaults (the streaming package) to each show. */
-    private fun resolveShows(config: ShowConfig): List<Show> {
-        val defaultPkg = config.config.default_app_package
-        if (defaultPkg.isBlank()) return config.shows
-        return config.shows.map { show ->
-            if (show.app_package.isBlank()) show.copy(app_package = defaultPkg) else show
-        }
+        // Each show is self-describing (its own app_package + home_link), so the
+        // list is used as-is — no app-level defaults to apply.
+        config.shows
     }
 
     private fun fetchFromNetwork(url: String): ShowConfig? {

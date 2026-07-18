@@ -82,9 +82,19 @@ class TvController(private val context: Context) {
      *   of guessing a delay. Blank skips the wait — nothing platform-specific is
      *   baked into the app.
      */
-    suspend fun play(deepLink: String, appPackage: String? = null): Boolean {
+    suspend fun play(deepLink: String, appPackage: String? = null, homeLink: String? = null): Boolean {
         val host = resolveHost() ?: return false
         return runRemote(host) { remote ->
+            // Reset the app first so a freshly tapped show doesn't stack on top of
+            // whatever is already open. Launching the app's (single-task) home
+            // clears any players stacked above it; the show then opens as the only
+            // entry above home, so the TV's Back button returns to the app home
+            // instead of walking back through every show opened before it.
+            if (!homeLink.isNullOrBlank()) {
+                remote.launchAppLink(homeLink)
+                if (!appPackage.isNullOrBlank()) remote.awaitForeground(appPackage, FOREGROUND_TIMEOUT_MS)
+                delay(HOME_RESET_MS)
+            }
             remote.launchAppLink(deepLink)
             val foreground = if (!appPackage.isNullOrBlank()) {
                 remote.awaitForeground(appPackage, FOREGROUND_TIMEOUT_MS)
@@ -245,6 +255,9 @@ class TvController(private val context: Context) {
         private const val SERVICE_TYPE = "_androidtvremote2._tcp."
 
         private const val FOREGROUND_TIMEOUT_MS = 12000L
+        // How long to let the app's home settle (and clear the old back stack)
+        // after the reset launch, before opening the show on top of it.
+        private const val HOME_RESET_MS = 2500L
         private const val SETTLE_AFTER_FOREGROUND_MS = 4500L
         private const val BLIND_SETTLE_MS = 8000L
         private const val PRESS_GAP_MS = 2500L

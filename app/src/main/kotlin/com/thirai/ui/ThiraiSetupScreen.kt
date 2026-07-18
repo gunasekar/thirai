@@ -202,7 +202,7 @@ fun ThiraiSetupScreen() {
         sendingIndex = index
         Toast.makeText(context, "Playing “${show.displayTitle}” on the TV…", Toast.LENGTH_SHORT).show()
         scope.launch {
-            val ok = controller.play(show.deep_link, show.app_package)
+            val ok = controller.play(show.deep_link, show.app_package, show.home_link)
             sendingIndex = -1
             if (!ok) {
                 Toast.makeText(

@@ -35,6 +35,7 @@ class PlaybackService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val deepLink = intent?.getStringExtra(EXTRA_DEEP_LINK)
         val appPackage = intent?.getStringExtra(EXTRA_PACKAGE)
+        val homeLink = intent?.getStringExtra(EXTRA_HOME_LINK)
         val restartOnly = intent?.getBooleanExtra(EXTRA_RESTART_ONLY, false) ?: false
         val title = intent?.getStringExtra(EXTRA_TITLE)
             ?: if (restartOnly) "the current show" else "your show"
@@ -48,7 +49,7 @@ class PlaybackService : Service() {
         scope.launch {
             try {
                 val tv = TvController(applicationContext)
-                if (restartOnly) tv.restartCurrent() else tv.play(deepLink!!, appPackage)
+                if (restartOnly) tv.restartCurrent() else tv.play(deepLink!!, appPackage, homeLink)
             } finally {
                 stopSelf(startId)
             }
@@ -86,6 +87,7 @@ class PlaybackService : Service() {
         const val EXTRA_DEEP_LINK = "com.thirai.DEEP_LINK"
         const val EXTRA_TITLE = "com.thirai.TITLE"
         const val EXTRA_PACKAGE = "com.thirai.PACKAGE"
+        const val EXTRA_HOME_LINK = "com.thirai.HOME_LINK"
         const val EXTRA_RESTART_ONLY = "com.thirai.RESTART_ONLY"
     }
 }

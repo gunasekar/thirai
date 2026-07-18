@@ -97,6 +97,7 @@ class ThiraiWidgetProvider : AppWidgetProvider() {
                     putExtra(PlaybackService.EXTRA_DEEP_LINK, show.deep_link)
                     putExtra(PlaybackService.EXTRA_TITLE, show.displayTitle)
                     putExtra(PlaybackService.EXTRA_PACKAGE, show.app_package)
+                    putExtra(PlaybackService.EXTRA_HOME_LINK, show.home_link)
                 }
                 val pendingIntent = PendingIntent.getForegroundService(
                     context, i, serviceIntent,
