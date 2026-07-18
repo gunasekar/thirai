@@ -10,6 +10,12 @@
 
 <p align="center">
   <a href="https://gunasekar.github.io/thirai/"><b>Config&nbsp;builder&nbsp;↗</b></a>
+  &nbsp;·&nbsp;
+  <a href="https://github.com/gunasekar/thirai/releases/latest">Download the APK</a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/gunasekar/thirai/releases/latest"><img src="https://img.shields.io/github/v/release/gunasekar/thirai?display_name=tag&amp;sort=semver" alt="Latest release"></a>
 </p>
 
 ---
