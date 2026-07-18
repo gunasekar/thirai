@@ -90,7 +90,7 @@
   .card p{margin:0; color:var(--muted); font-size:14px}
 
   /* Builder */
-  .row-head, .show-row{display:grid; grid-template-columns:1.3fr 1.3fr 2fr 2fr 1.2fr 32px; gap:8px; align-items:center}
+  .row-head, .show-row{display:grid; grid-template-columns:1.1fr 1.1fr 1.8fr 1.6fr 1.3fr 1.5fr 32px; gap:8px; align-items:center}
   .row-head{font-size:12px; color:var(--muted); font-family:"IBM Plex Mono",monospace; text-transform:uppercase; letter-spacing:.08em; margin:18px 0 6px; padding:0 2px}
   .show-row{margin-bottom:8px}
   input, textarea{
@@ -166,15 +166,10 @@
   <section id="builder">
     <div class="eyebrow">Config builder</div>
     <h2>Build your show list</h2>
-    <p class="lead">Add each show, then copy the JSON to your host and make a setup QR. The native-language title is shown to the viewer; the English title is just a label.</p>
-
-    <div class="field" style="max-width:420px">
-      <label>Default streaming app package (optional)</label>
-      <input id="defpkg" value="in.startv.hotstar" placeholder="e.g. in.startv.hotstar" />
-    </div>
+    <p class="lead">Add each show, then copy the JSON to your host and make a setup QR. The native-language title is shown to the viewer; the English title is just a label. Each show carries its own app package and home URL, so one list can mix apps (Hotstar, Netflix, Prime…).</p>
 
     <div class="row-head">
-      <div>Title (English)</div><div>Title (native)</div><div>Deep link</div><div>Poster URL</div><div>App package</div><div></div>
+      <div>Title (English)</div><div>Title (native)</div><div>Deep link</div><div>Poster URL</div><div>App package</div><div>App home URL</div><div></div>
     </div>
     <div id="rows"></div>
 
@@ -217,7 +212,8 @@
     ['title_native','சிறகடிக்க ஆசை'],
     ['deep_link','https://www.hotstar.com/in/shows/…'],
     ['image_url','https://…/poster.png'],
-    ['app_package','(default)'],
+    ['app_package','in.startv.hotstar'],
+    ['home_link','https://www.hotstar.com/in'],
   ];
   function addRow(v){
     v = v||{};
@@ -235,7 +231,6 @@
     rows.appendChild(el);
   }
   function generate(){
-    const def = document.getElementById('defpkg').value.trim();
     const shows = [...document.querySelectorAll('.show-row')].map((r,i)=>{
       const get=k=>r.querySelector(`[data-k="${k}"]`).value.trim();
       const o={ id:String(i+1), title:get('title') };
@@ -243,10 +238,10 @@
       o.image_url=get('image_url');
       o.deep_link=get('deep_link');
       if(get('app_package')) o.app_package=get('app_package');
+      if(get('home_link')) o.home_link=get('home_link');
       return o;
     }).filter(o=>o.title||o.deep_link);
-    const obj={ config: def?{default_app_package:def}:{}, shows };
-    document.getElementById('json').value = JSON.stringify(obj,null,2);
+    document.getElementById('json').value = JSON.stringify({ shows },null,2);
   }
   function copyJson(btn){
     const t=document.getElementById('json'); t.select();
@@ -272,7 +267,7 @@
     try{ localStorage.setItem('thirai-theme', next); }catch(e){}
   });
   // Seed with one sample row + one empty
-  addRow({title:'Siragadikka Aasai', title_native:'சிறகடிக்க ஆசை', deep_link:'https://www.hotstar.com/in/shows/siragadikka-aasai/1260129356'});
+  addRow({title:'Siragadikka Aasai', title_native:'சிறகடிக்க ஆசை', deep_link:'https://www.hotstar.com/in/shows/siragadikka-aasai/1260129356', app_package:'in.startv.hotstar', home_link:'https://www.hotstar.com/in'});
   addRow();
 </script>
 </body>
