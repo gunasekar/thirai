@@ -109,10 +109,6 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
-            // BouncyCastle ships payloads we never touch: post-quantum (picnic)
-            // key data and localized cert-path message bundles. Drop them.
-            excludes += "org/bouncycastle/pqc/**"
-            excludes += "org/bouncycastle/**/*Messages*.properties"
         }
     }
 
@@ -148,10 +144,10 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.okhttp)
 
-    // Android TV Remote v2 transport: Wire for the protobuf messages, and
-    // BouncyCastle to mint the self-signed client certificate used for pairing.
+    // Android TV Remote v2 transport: Wire for the protobuf messages. The
+    // self-signed pairing certificate is minted by the Android Keystore, so no
+    // third-party crypto library is needed.
     implementation("com.squareup.wire:wire-runtime:6.2.0")
-    implementation("org.bouncycastle:bcpkix-jdk18on:1.78.1")
 
     // Glide loads poster bitmaps for the home-screen widget's RemoteViews.
     implementation("com.github.bumptech.glide:glide:4.16.0")

@@ -20,10 +20,6 @@
 -keep class com.google.polo.wire.protobuf.** { *; }
 -dontwarn com.squareup.wire.**
 
-# --- BouncyCastle (self-signed client cert for pairing) ---
--keep class org.bouncycastle.** { *; }
--dontwarn org.bouncycastle.**
-
 # --- ZXing / journeyapps (setup QR scan + generate) ---
 -keep class com.journeyapps.barcodescanner.** { *; }
 -dontwarn com.google.zxing.**
