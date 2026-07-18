@@ -24,7 +24,10 @@
             android:src="@drawable/ic_logo_widget"
             android:contentDescription="@string/app_name" />
 
-        <!-- English wordmark + amber accent dot -->
+        <!-- English wordmark + amber accent dot. System bold, not the app's
+             @font/bricolage_bold: a custom font resource in a RemoteViews layout
+             throws InflateException when the launcher renders the widget on API
+             < 31, which kept it out of the widget picker on Android 11. -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -32,7 +35,7 @@
             android:text="@string/app_name"
             android:textColor="#F3EEE4"
             android:textSize="15sp"
-            android:fontFamily="@font/bricolage_bold" />
+            android:textStyle="bold" />
 
         <TextView
             android:layout_width="0dp"
@@ -41,7 +44,7 @@
             android:text="."
             android:textColor="#E8A33D"
             android:textSize="15sp"
-            android:fontFamily="@font/bricolage_bold" />
+            android:textStyle="bold" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -163,5 +166,5 @@
         android:text="@string/widget_restart"
         android:textColor="#E8A33D"
         android:textSize="12sp"
-        android:fontFamily="@font/bricolage_bold" />
+        android:textStyle="bold" />
 </LinearLayout>
