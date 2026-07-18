@@ -99,7 +99,7 @@
   .field label{display:block; font-size:13px; color:var(--muted); margin-bottom:6px}
   .out{margin-top:18px}
   /* The QR image sits on white always (a QR needs a light quiet zone) */
-  #qrbox{background:#fff; padding:14px; border-radius:16px; display:inline-block; margin-top:12px}
+  #qrbox{background:#fff; padding:14px; border-radius:16px; display:none; margin-top:12px}
   #qrbox img, #qrbox canvas{display:block}
   .note{font-size:13px; color:var(--muted)}
   code{background:var(--surface2); padding:2px 6px; border-radius:6px; font-family:"IBM Plex Mono",monospace; font-size:.9em}
@@ -246,10 +246,11 @@
   }
   function makeQr(){
     const url=document.getElementById('srcurl').value.trim();
-    const box=document.getElementById('qrbox'); box.innerHTML='';
+    const box=document.getElementById('qrbox'); box.innerHTML=''; box.style.display='none';
     document.getElementById('qrnote').textContent='';
     if(!url){ document.getElementById('qrnote').textContent='Enter your hosted shows.json URL first.'; return; }
     new QRCode(box,{ text:url, width:220, height:220, colorDark:'#0E0B07', colorLight:'#ffffff', correctLevel:QRCode.CorrectLevel.M });
+    box.style.display='inline-block';
     document.getElementById('qrnote').textContent='Scan this in Thirai → Show source → Scan QR.';
   }
   // Theme toggle
