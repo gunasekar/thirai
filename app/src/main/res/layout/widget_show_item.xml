@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- One show tile in the scrolling widget grid: an aspect-locked poster over a
+     title. The root is the tap target — its click carries a fill-in intent set
+     by WidgetShowsService, merged into the grid's PendingIntent template. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/show_item_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="4dp">
+
+    <ImageView
+        android:id="@+id/show_item_poster"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY"
+        android:background="@drawable/show_placeholder"
+        android:contentDescription="@string/app_name" />
+
+    <TextView
+        android:id="@+id/show_item_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#D8CFBF"
+        android:textSize="11sp"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:layout_marginTop="6dp" />
+</LinearLayout>

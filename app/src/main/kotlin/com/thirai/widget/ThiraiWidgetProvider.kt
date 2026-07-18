@@ -6,6 +6,7 @@ import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.net.Uri
 import android.util.Log
 import android.view.View
 import android.widget.RemoteViews
@@ -40,7 +41,21 @@ class ThiraiWidgetProvider : AppWidgetProvider() {
 
     override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
         CoroutineScope(Dispatchers.IO).launch {
+            // Only the shows enabled for the widget (per-show toggle in the app,
+            // defaulting to each show's config status).
             val shows = ThiraiConfigFetcher.fetchShows(context)
+                .filter { WidgetShowState.isEnabled(context, it) }
+
+            // More than one gridful → the scrolling variant, which loads its own
+            // posters, so skip the preload here.
+            if (shows.size > slots.size) {
+                withContext(Dispatchers.Main) {
+                    for (appWidgetId in appWidgetIds) {
+                        updateScrollWidget(context, appWidgetManager, appWidgetId)
+                    }
+                }
+                return@launch
+            }
 
             // Pre-load all bitmaps on background thread
             // Round the poster corners to match the app's card language. Corner
@@ -70,6 +85,47 @@ class ThiraiWidgetProvider : AppWidgetProvider() {
                 }
             }
         }
+    }
+
+    /**
+     * Build the scrolling variant: a GridView whose items come from
+     * [WidgetShowsService]. Item taps fire a per-show fill-in intent merged into
+     * a foreground-service PendingIntent template — a widget tap is exempt from
+     * the background-FGS-start restriction, same as the compact tiles.
+     */
+    private fun updateScrollWidget(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetId: Int,
+    ) {
+        val views = RemoteViews(context.packageName, R.layout.widget_thirai_scroll)
+
+        val serviceIntent = Intent(context, WidgetShowsService::class.java).apply {
+            putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+            // A unique data URI per widget id so each grid gets its own adapter.
+            data = Uri.parse(toUri(Intent.URI_INTENT_SCHEME))
+        }
+        views.setRemoteAdapter(R.id.show_grid, serviceIntent)
+
+        // The template must be MUTABLE so each item's fill-in intent can merge in.
+        val template = Intent(context, PlaybackService::class.java)
+        val templatePending = PendingIntent.getForegroundService(
+            context, 0, template,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE,
+        )
+        views.setPendingIntentTemplate(R.id.show_grid, templatePending)
+
+        val restartIntent = Intent(context, PlaybackService::class.java).apply {
+            putExtra(PlaybackService.EXTRA_RESTART_ONLY, true)
+        }
+        val restartPending = PendingIntent.getForegroundService(
+            context, 999, restartIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+        views.setOnClickPendingIntent(R.id.widget_restart, restartPending)
+
+        appWidgetManager.updateAppWidget(appWidgetId, views)
+        appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.show_grid)
     }
 
     private fun updateWidget(

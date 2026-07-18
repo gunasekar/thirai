@@ -47,6 +47,11 @@
             android:foregroundServiceType="shortService" />
 
         <!-- The Widget Receiver -->
+        <service
+            android:name=".widget.WidgetShowsService"
+            android:permission="android.permission.BIND_REMOTEVIEWS"
+            android:exported="false" />
+
         <receiver android:name=".widget.ThiraiWidgetProvider" android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

@@ -54,10 +54,10 @@ object ThiraiConfigFetcher {
                 Log.w(TAG, "No config available (network or cache)")
                 return@withContext emptyList()
             }
-        // Each show is self-describing (its own app_package + home_link). Drop
-        // any the config has parked (status not active/enabled) so they show in
-        // neither the app nor the widget.
-        config.shows.filter { it.enabled }
+        // Return every show. The app lists them all; `status` is only a default
+        // for the per-show widget toggle (see WidgetShowState), and the widget —
+        // not this fetch — is what filters to the enabled set.
+        config.shows
     }
 
     private fun fetchFromNetwork(url: String): ShowConfig? {

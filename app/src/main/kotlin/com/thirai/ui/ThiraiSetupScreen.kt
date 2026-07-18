@@ -34,6 +34,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
@@ -42,6 +43,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -67,6 +69,7 @@ import com.thirai.config.Show
 import com.thirai.config.ThiraiConfigFetcher
 import com.thirai.tv.TvController
 import com.thirai.tv.TvPairing
+import com.thirai.widget.WidgetShowState
 import kotlinx.coroutines.launch
 
 /** How the TV link reads at a glance. */
@@ -106,6 +109,9 @@ fun ThiraiSetupScreen() {
     var sourceUrl by remember { mutableStateOf(ThiraiConfigFetcher.sourceUrl(context)) }
     var showQr by remember { mutableStateOf(false) }
 
+    // Per-show "show on the widget" state, seeded from each show's config status.
+    val widgetEnabled = remember { mutableStateMapOf<String, Boolean>() }
+
     fun loadShows() {
         showsLoading = true
         showsError = false
@@ -113,6 +119,7 @@ fun ThiraiSetupScreen() {
             val fetched = ThiraiConfigFetcher.fetchShows(context)
             shows.clear()
             shows.addAll(fetched)
+            fetched.forEach { widgetEnabled[it.id] = WidgetShowState.isEnabled(context, it) }
             showsError = fetched.isEmpty()
             showsLoading = false
         }
@@ -279,7 +286,13 @@ fun ThiraiSetupScreen() {
                 shows = shows,
                 sendingIndex = sendingIndex,
                 tvReady = link == Link.Connected,
+                widgetEnabled = widgetEnabled,
                 onPlay = ::play,
+                onWidgetToggle = { show, on ->
+                    widgetEnabled[show.id] = on
+                    WidgetShowState.setEnabled(context, show.id, on)
+                    scope.launch { updateWidgets(context) }
+                },
             )
             Spacer(Modifier.height(12.dp))
             SecondaryButton(
@@ -291,7 +304,7 @@ fun ThiraiSetupScreen() {
                 },
             )
             Text(
-                text = "Tap a show to play it on the TV. Shows are managed remotely in the source below — edit it once and every phone picks up the change on the next refresh.",
+                text = "Tap a show to play it on the TV. Use each show's switch to choose what appears on the home-screen widget — it shows a clean grid of up to six, and scrolls when you enable more.",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(top = 8.dp),
@@ -565,7 +578,9 @@ private fun ShowsSection(
     shows: List<Show>,
     sendingIndex: Int,
     tvReady: Boolean,
+    widgetEnabled: Map<String, Boolean>,
     onPlay: (Show, Int) -> Unit,
+    onWidgetToggle: (Show, Boolean) -> Unit,
 ) {
     when {
         loading -> ThiraiCard(modifier = Modifier.fillMaxWidth()) {
@@ -595,6 +610,8 @@ private fun ShowsSection(
                     // would silently fail, so the row is dimmed and inert instead.
                     enabled = tvReady && sendingIndex == -1 && show.deep_link.isNotBlank(),
                     tvReady = tvReady,
+                    widgetOn = widgetEnabled[show.id] ?: true,
+                    onWidgetToggle = { on -> onWidgetToggle(show, on) },
                     onClick = { onPlay(show, index) },
                 )
             }
@@ -608,59 +625,76 @@ private fun ShowRow(
     sending: Boolean,
     enabled: Boolean,
     tvReady: Boolean,
+    widgetOn: Boolean,
+    onWidgetToggle: (Boolean) -> Unit,
     onClick: () -> Unit,
 ) {
     ThiraiCard(
         modifier = Modifier
             .fillMaxWidth()
-            .alpha(if (tvReady) 1f else 0.45f)
             .clickable(enabled = enabled, onClick = onClick),
         contentPadding = PaddingValues(12.dp),
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(
+            // Play-related content dims when the TV isn't reachable; the widget
+            // switch (right) stays fully active — curating the widget doesn't
+            // need a TV.
+            Row(
                 modifier = Modifier
-                    .size(width = 52.dp, height = 70.dp)
-                    .clip(MaterialTheme.shapes.small)
-                    .background(MaterialTheme.colorScheme.surfaceVariant),
-                contentAlignment = Alignment.Center,
+                    .weight(1f)
+                    .alpha(if (tvReady) 1f else 0.45f),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Icon(
-                    painter = painterResource(com.thirai.R.drawable.ic_logo),
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-                    modifier = Modifier.size(22.dp),
-                )
-                AsyncImage(
-                    model = show.image_url,
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop,
-                    modifier = Modifier.fillMaxSize(),
-                )
+                Box(
+                    modifier = Modifier
+                        .size(width = 52.dp, height = 70.dp)
+                        .clip(MaterialTheme.shapes.small)
+                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Icon(
+                        painter = painterResource(com.thirai.R.drawable.ic_logo),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
+                        modifier = Modifier.size(22.dp),
+                    )
+                    AsyncImage(
+                        model = show.image_url,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                }
+                Spacer(Modifier.size(14.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        show.displayTitle,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                    Text(
+                        when {
+                            sending -> "Sending to TV…"
+                            !tvReady -> "Connect your TV to play"
+                            else -> "Tap to play on TV"
+                        },
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (sending) {
+                            MaterialTheme.colorScheme.primary
+                        } else {
+                            MaterialTheme.colorScheme.onSurfaceVariant
+                        },
+                    )
+                }
+                Spacer(Modifier.size(12.dp))
+                PlayAffordance(sending = sending, ready = tvReady)
             }
-            Spacer(Modifier.size(14.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    show.displayTitle,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                )
-                Text(
-                    when {
-                        sending -> "Sending to TV…"
-                        !tvReady -> "Connect your TV to play"
-                        else -> "Tap to play on TV"
-                    },
-                    style = MaterialTheme.typography.bodySmall,
-                    color = if (sending) {
-                        MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                    },
-                )
-            }
-            Spacer(Modifier.size(12.dp))
-            PlayAffordance(sending = sending, ready = tvReady)
+            Spacer(Modifier.size(6.dp))
+            // Per-show widget inclusion — independent of the TV.
+            Switch(
+                checked = widgetOn,
+                onCheckedChange = onWidgetToggle,
+            )
         }
     }
 }

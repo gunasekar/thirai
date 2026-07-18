@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Scrolling variant of the widget: the same header and "Play from start" pill,
+     with a vertically scrolling 3-wide GridView of every enabled show between
+     them. Selected in ThiraiWidgetProvider when the in-app "Scrollable widget"
+     toggle is on. The grid is backed by WidgetShowsService. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="14dp"
+    android:background="@drawable/widget_background">
+
+    <!-- Brand header (matches the compact widget). -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="12dp">
+
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@drawable/ic_logo_widget"
+            android:contentDescription="@string/app_name" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/app_name"
+            android:textColor="#F3EEE4"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="."
+            android:textColor="#E8A33D"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/widget_hint"
+            android:textColor="#8C8474"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+    <!-- Scrolling grid of shows. -->
+    <GridView
+        android:id="@+id/show_grid"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:numColumns="3"
+        android:horizontalSpacing="8dp"
+        android:verticalSpacing="10dp"
+        android:stretchMode="columnWidth"
+        android:listSelector="@android:color/transparent" />
+
+    <!-- Play current from start — same action as the compact widget. -->
+    <TextView
+        android:id="@+id/widget_restart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/widget_button_bg"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
+        android:gravity="center"
+        android:text="@string/widget_restart"
+        android:textColor="#E8A33D"
+        android:textSize="12sp"
+        android:textStyle="bold" />
+</LinearLayout>
