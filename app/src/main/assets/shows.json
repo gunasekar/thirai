@@ -1,0 +1,28 @@
+{
+  "shows": [
+    {
+      "id": "1",
+      "title": "Baakiyalakshmi",
+      "image_url": "https://img.hotstar.com/image/upload/f_auto,q_80,w_400/v1/uploads/images/baakiyalakshmi.jpg",
+      "deep_link": "https://www.hotstar.com/in/shows/baakiyalakshmi/1260110771"
+    },
+    {
+      "id": "2",
+      "title": "Pandian Stores",
+      "image_url": "https://img.hotstar.com/image/upload/f_auto,q_80,w_400/v1/uploads/images/pandian-stores.jpg",
+      "deep_link": "https://www.hotstar.com/in/shows/pandian-stores/1260099040"
+    },
+    {
+      "id": "3",
+      "title": "Kayal",
+      "image_url": "https://img.hotstar.com/image/upload/f_auto,q_80,w_400/v1/uploads/images/kayal.jpg",
+      "deep_link": "https://www.hotstar.com/in/shows/kayal/1260105014"
+    },
+    {
+      "id": "4",
+      "title": "Mahanthi",
+      "image_url": "https://img.hotstar.com/image/upload/f_auto,q_80,w_400/v1/uploads/images/mahanthi.jpg",
+      "deep_link": "https://www.hotstar.com/in/shows/mahanthi/1260113016"
+    }
+  ]
+}
