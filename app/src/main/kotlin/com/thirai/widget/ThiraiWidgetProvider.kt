@@ -123,7 +123,7 @@ class ThiraiWidgetProvider : AppWidgetProvider() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
         views.setOnClickPendingIntent(R.id.widget_restart, restartPending)
-        views.setOnClickPendingIntent(R.id.widget_next, nextPendingIntent(context))
+        views.setOnClickPendingIntent(R.id.widget_stop, stopPendingIntent(context))
 
         appWidgetManager.updateAppWidget(appWidgetId, views)
         appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetId, R.id.show_grid)
@@ -187,17 +187,17 @@ class ThiraiWidgetProvider : AppWidgetProvider() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         views.setOnClickPendingIntent(R.id.widget_restart, restartPending)
-        views.setOnClickPendingIntent(R.id.widget_next, nextPendingIntent(context))
+        views.setOnClickPendingIntent(R.id.widget_stop, stopPendingIntent(context))
 
         // Otherwise nothing in the widget opens the app — the poster tiles play,
-        // the bottom buttons restart / skip. The app is opened from its own icon.
+        // the bottom buttons restart / stop. The app is opened from its own icon.
         appWidgetManager.updateAppWidget(appWidgetId, views)
     }
 
-    /** PendingIntent for the "Next" button — skips to the next episode on the TV. */
-    private fun nextPendingIntent(context: Context): PendingIntent {
+    /** PendingIntent for the "Stop" button — stops playback and returns to the app's home. */
+    private fun stopPendingIntent(context: Context): PendingIntent {
         val intent = Intent(context, PlaybackService::class.java).apply {
-            putExtra(PlaybackService.EXTRA_NEXT_ONLY, true)
+            putExtra(PlaybackService.EXTRA_STOP_ONLY, true)
         }
         return PendingIntent.getForegroundService(
             context, 998, intent,

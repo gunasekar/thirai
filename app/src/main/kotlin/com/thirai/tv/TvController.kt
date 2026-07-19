@@ -84,6 +84,11 @@ class TvController(private val context: Context) {
      */
     suspend fun play(deepLink: String, appPackage: String? = null, homeLink: String? = null): Boolean {
         val host = resolveHost() ?: return false
+        // Remember the app's home so the widget's Stop button can return there,
+        // even though that tap carries no show context.
+        if (!homeLink.isNullOrBlank()) {
+            prefs.edit().putString(PREF_LAST_HOME, homeLink).apply()
+        }
         return runRemote(host) { remote ->
             // Reset the app first so a freshly tapped show doesn't stack on top of
             // whatever is already open. Launching the app's (single-task) home
@@ -125,16 +130,16 @@ class TvController(private val context: Context) {
     }
 
     /**
-     * Skip to the next episode of whatever is playing. Sends MEDIA_NEXT, which an
-     * ExoPlayer-based app (like Hotstar) treats as "next item in the queue".
-     * Fire-and-hope like [restartCurrent]: the protocol reports the foreground
-     * app but not playback state, so if the app isn't in its player this is a
-     * no-op. Triggered from the widget's "Next" button.
+     * Stop playback and return to the streaming app's home. Launches the app's
+     * home URL (remembered from the last [play]); the app's home is single-task,
+     * so this leaves the player and lands on home — effectively a stop. Triggered
+     * from the widget's "Stop" button. No-op if nothing has been played yet.
      */
-    suspend fun nextEpisode(): Boolean {
+    suspend fun stopToHome(): Boolean {
+        val home = prefs.getString(PREF_LAST_HOME, null)?.ifBlank { null } ?: return false
         val host = resolveHost() ?: return false
         return runRemote(host) { remote ->
-            remote.sendKey(RemoteKeyCode.KEYCODE_MEDIA_NEXT)
+            remote.launchAppLink(home)
         }
     }
 
@@ -266,6 +271,7 @@ class TvController(private val context: Context) {
         private const val PREF_LAST_IP = "last_tv_ip"
         private const val PREF_PAIRED = "tv_paired"
         private const val PREF_TV_NAME = "tv_name"
+        private const val PREF_LAST_HOME = "last_home_link"
         private const val SERVICE_TYPE = "_androidtvremote2._tcp."
 
         private const val FOREGROUND_TIMEOUT_MS = 12000L
