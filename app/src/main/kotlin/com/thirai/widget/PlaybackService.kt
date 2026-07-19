@@ -38,16 +38,18 @@ class PlaybackService : Service() {
         val homeLink = intent?.getStringExtra(EXTRA_HOME_LINK)
         val restartOnly = intent?.getBooleanExtra(EXTRA_RESTART_ONLY, false) ?: false
         val stopOnly = intent?.getBooleanExtra(EXTRA_STOP_ONLY, false) ?: false
+        val playPause = intent?.getBooleanExtra(EXTRA_PLAY_PAUSE, false) ?: false
         val title = intent?.getStringExtra(EXTRA_TITLE) ?: "your show"
 
         val (notifTitle, notifText) = when {
             stopOnly -> "Stopping on TV" to "Returning to the app's home…"
+            playPause -> "Play/Pause on TV" to "Toggling playback…"
             restartOnly -> "Restarting on TV" to "Playing “$title” from the start…"
             else -> "Starting on TV" to "Playing “$title”…"
         }
         startForeground(NOTIFICATION_ID, buildNotification(notifTitle, notifText))
 
-        if (!restartOnly && !stopOnly && deepLink.isNullOrBlank()) {
+        if (!restartOnly && !stopOnly && !playPause && deepLink.isNullOrBlank()) {
             stopSelf(startId)
             return START_NOT_STICKY
         }
@@ -57,6 +59,7 @@ class PlaybackService : Service() {
                 val tv = TvController(applicationContext)
                 when {
                     stopOnly -> tv.stopToHome()
+                    playPause -> tv.playPause()
                     restartOnly -> tv.restartCurrent()
                     else -> tv.play(deepLink!!, appPackage, homeLink)
                 }
@@ -100,5 +103,6 @@ class PlaybackService : Service() {
         const val EXTRA_HOME_LINK = "com.thirai.HOME_LINK"
         const val EXTRA_RESTART_ONLY = "com.thirai.RESTART_ONLY"
         const val EXTRA_STOP_ONLY = "com.thirai.STOP_ONLY"
+        const val EXTRA_PLAY_PAUSE = "com.thirai.PLAY_PAUSE"
     }
 }

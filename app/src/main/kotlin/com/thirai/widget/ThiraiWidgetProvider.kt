@@ -123,6 +123,7 @@ class ThiraiWidgetProvider : AppWidgetProvider() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
         )
         views.setOnClickPendingIntent(R.id.widget_restart, restartPending)
+        views.setOnClickPendingIntent(R.id.widget_playpause, playPausePendingIntent(context))
         views.setOnClickPendingIntent(R.id.widget_stop, stopPendingIntent(context))
 
         appWidgetManager.updateAppWidget(appWidgetId, views)
@@ -187,11 +188,23 @@ class ThiraiWidgetProvider : AppWidgetProvider() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         views.setOnClickPendingIntent(R.id.widget_restart, restartPending)
+        views.setOnClickPendingIntent(R.id.widget_playpause, playPausePendingIntent(context))
         views.setOnClickPendingIntent(R.id.widget_stop, stopPendingIntent(context))
 
         // Otherwise nothing in the widget opens the app — the poster tiles play,
-        // the bottom buttons restart / stop. The app is opened from its own icon.
+        // the bottom buttons restart / play-pause / stop. The app opens from its icon.
         appWidgetManager.updateAppWidget(appWidgetId, views)
+    }
+
+    /** PendingIntent for the middle "Play/Pause" button — toggles playback on the TV. */
+    private fun playPausePendingIntent(context: Context): PendingIntent {
+        val intent = Intent(context, PlaybackService::class.java).apply {
+            putExtra(PlaybackService.EXTRA_PLAY_PAUSE, true)
+        }
+        return PendingIntent.getForegroundService(
+            context, 997, intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
     }
 
     /** PendingIntent for the "Stop" button — stops playback and returns to the app's home. */

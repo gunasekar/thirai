@@ -184,6 +184,23 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/widget_playpause"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/widget_button_bg"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:gravity="center"
+            android:text="@string/widget_playpause"
+            android:textColor="#E8A33D"
+            android:textSize="12sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textStyle="bold" />
+
+        <TextView
             android:id="@+id/widget_stop"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

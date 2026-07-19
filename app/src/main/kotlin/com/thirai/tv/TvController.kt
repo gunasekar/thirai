@@ -130,6 +130,18 @@ class TvController(private val context: Context) {
     }
 
     /**
+     * Toggle play/pause on whatever is on the TV. Sends MEDIA_PLAY_PAUSE, the
+     * standard transport toggle. Fire-and-hope like the other transport actions.
+     * Triggered from the widget's middle button.
+     */
+    suspend fun playPause(): Boolean {
+        val host = resolveHost() ?: return false
+        return runRemote(host) { remote ->
+            remote.sendKey(RemoteKeyCode.KEYCODE_MEDIA_PLAY_PAUSE)
+        }
+    }
+
+    /**
      * Stop playback and return to the streaming app's home. Launches the app's
      * home URL (remembered from the last [play]); the app's home is single-task,
      * so this leaves the player and lands on home — effectively a stop. Triggered
