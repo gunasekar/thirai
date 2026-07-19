@@ -124,6 +124,20 @@ class TvController(private val context: Context) {
         }
     }
 
+    /**
+     * Skip to the next episode of whatever is playing. Sends MEDIA_NEXT, which an
+     * ExoPlayer-based app (like Hotstar) treats as "next item in the queue".
+     * Fire-and-hope like [restartCurrent]: the protocol reports the foreground
+     * app but not playback state, so if the app isn't in its player this is a
+     * no-op. Triggered from the widget's "Next" button.
+     */
+    suspend fun nextEpisode(): Boolean {
+        val host = resolveHost() ?: return false
+        return runRemote(host) { remote ->
+            remote.sendKey(RemoteKeyCode.KEYCODE_MEDIA_NEXT)
+        }
+    }
+
     // All socket work runs on IO regardless of the caller's dispatcher — the
     // in-app path calls this from the main thread, and a blocking write there
     // would throw NetworkOnMainThreadException.

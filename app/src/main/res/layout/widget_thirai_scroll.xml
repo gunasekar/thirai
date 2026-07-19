@@ -62,18 +62,41 @@
         android:stretchMode="columnWidth"
         android:listSelector="@android:color/transparent" />
 
-    <!-- Play current from start — same action as the compact widget. -->
-    <TextView
-        android:id="@+id/widget_restart"
+    <!-- Transport controls — same actions as the compact widget. -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="12dp"
-        android:background="@drawable/widget_button_bg"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:gravity="center"
-        android:text="@string/widget_restart"
-        android:textColor="#E8A33D"
-        android:textSize="12sp"
-        android:textStyle="bold" />
+        android:orientation="horizontal"
+        android:baselineAligned="false"
+        android:layout_marginTop="12dp">
+
+        <TextView
+            android:id="@+id/widget_restart"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/widget_button_bg"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:gravity="center"
+            android:text="@string/widget_restart"
+            android:textColor="#E8A33D"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/widget_next"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@drawable/widget_button_bg"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:gravity="center"
+            android:text="@string/widget_next"
+            android:textColor="#E8A33D"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+    </LinearLayout>
 </LinearLayout>

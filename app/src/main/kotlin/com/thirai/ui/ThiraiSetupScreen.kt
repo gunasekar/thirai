@@ -666,26 +666,12 @@ private fun ShowRow(
                     )
                 }
                 Spacer(Modifier.size(14.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        show.displayTitle,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                    Text(
-                        when {
-                            sending -> "Sending to TV…"
-                            !tvReady -> "Connect your TV to play"
-                            else -> "Tap to play on TV"
-                        },
-                        style = MaterialTheme.typography.bodySmall,
-                        color = if (sending) {
-                            MaterialTheme.colorScheme.primary
-                        } else {
-                            MaterialTheme.colorScheme.onSurfaceVariant
-                        },
-                    )
-                }
+                Text(
+                    show.displayTitle,
+                    modifier = Modifier.weight(1f),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
                 Spacer(Modifier.size(12.dp))
                 PlayAffordance(sending = sending, ready = tvReady)
             }

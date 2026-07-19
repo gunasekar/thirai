@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name">Thirai</string>
     <string name="widget_hint">Tap to play</string>
-    <string name="widget_restart">↺  Play current from start</string>
+    <string name="widget_restart">↺  Restart</string>
+    <string name="widget_next">Next  ⏭</string>
 </resources>

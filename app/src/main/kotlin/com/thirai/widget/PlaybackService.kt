@@ -37,11 +37,17 @@ class PlaybackService : Service() {
         val appPackage = intent?.getStringExtra(EXTRA_PACKAGE)
         val homeLink = intent?.getStringExtra(EXTRA_HOME_LINK)
         val restartOnly = intent?.getBooleanExtra(EXTRA_RESTART_ONLY, false) ?: false
-        val title = intent?.getStringExtra(EXTRA_TITLE)
-            ?: if (restartOnly) "the current show" else "your show"
-        startForeground(NOTIFICATION_ID, buildNotification(title, restartOnly))
+        val nextOnly = intent?.getBooleanExtra(EXTRA_NEXT_ONLY, false) ?: false
+        val title = intent?.getStringExtra(EXTRA_TITLE) ?: "your show"
 
-        if (!restartOnly && deepLink.isNullOrBlank()) {
+        val (notifTitle, notifText) = when {
+            nextOnly -> "Next on TV" to "Skipping to the next episode…"
+            restartOnly -> "Restarting on TV" to "Playing “$title” from the start…"
+            else -> "Starting on TV" to "Playing “$title”…"
+        }
+        startForeground(NOTIFICATION_ID, buildNotification(notifTitle, notifText))
+
+        if (!restartOnly && !nextOnly && deepLink.isNullOrBlank()) {
             stopSelf(startId)
             return START_NOT_STICKY
         }
@@ -49,7 +55,11 @@ class PlaybackService : Service() {
         scope.launch {
             try {
                 val tv = TvController(applicationContext)
-                if (restartOnly) tv.restartCurrent() else tv.play(deepLink!!, appPackage, homeLink)
+                when {
+                    nextOnly -> tv.nextEpisode()
+                    restartOnly -> tv.restartCurrent()
+                    else -> tv.play(deepLink!!, appPackage, homeLink)
+                }
             } finally {
                 stopSelf(startId)
             }
@@ -62,7 +72,7 @@ class PlaybackService : Service() {
         super.onDestroy()
     }
 
-    private fun buildNotification(title: String, restartOnly: Boolean): Notification {
+    private fun buildNotification(contentTitle: String, contentText: String): Notification {
         val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
@@ -74,8 +84,8 @@ class PlaybackService : Service() {
         }
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_logo)
-            .setContentTitle(if (restartOnly) "Restarting on TV" else "Starting on TV")
-            .setContentText(if (restartOnly) "Playing “$title” from the start…" else "Playing “$title”…")
+            .setContentTitle(contentTitle)
+            .setContentText(contentText)
             .setOngoing(true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
             .build()
@@ -89,5 +99,6 @@ class PlaybackService : Service() {
         const val EXTRA_PACKAGE = "com.thirai.PACKAGE"
         const val EXTRA_HOME_LINK = "com.thirai.HOME_LINK"
         const val EXTRA_RESTART_ONLY = "com.thirai.RESTART_ONLY"
+        const val EXTRA_NEXT_ONLY = "com.thirai.NEXT_ONLY"
     }
 }
